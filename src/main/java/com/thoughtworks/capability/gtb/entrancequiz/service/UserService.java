@@ -5,6 +5,8 @@ import com.thoughtworks.capability.gtb.entrancequiz.entity.UserEntity;
 import com.thoughtworks.capability.gtb.entrancequiz.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
 
@@ -29,13 +31,13 @@ public class UserService {
     }
 
     public User getUserById(Long id) {
-        UserEntity userEntity = userRepository.getUserInfoById(id);
+        UserEntity userEntity = userRepository.findById(id).get();
         return convertUserEntityToUser(userEntity);
     }
 
     public User createUser(User user) {
         UserEntity userEntity = convertUserToUserEntity(user);
-        UserEntity savedUserEntity = userRepository.saveUser(userEntity);
+        UserEntity savedUserEntity = userRepository.save(userEntity);
         return convertUserEntityToUser(savedUserEntity);
     }
 }

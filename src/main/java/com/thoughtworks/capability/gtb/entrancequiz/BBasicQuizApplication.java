@@ -4,8 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GtbEntranceQuizApplication {
+public class BBasicQuizApplication {
     public static void main(String[] args) {
-        SpringApplication.run(GtbEntranceQuizApplication.class, args);
+        SpringApplication.run(BBasicQuizApplication.class, args);
     }
 }

@@ -29,7 +29,6 @@ public class EducationController {
     @ResponseStatus(HttpStatus.CREATED)
     public Education createEducation(@RequestBody @Valid Education education,
                                      @PathVariable Long id) {
-        education.setUserId(id);
-        return educationService.createEducation(education);
+        return educationService.createEducation(education,id);
     }
 }
