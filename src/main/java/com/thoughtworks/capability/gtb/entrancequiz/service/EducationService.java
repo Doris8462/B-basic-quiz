@@ -1,5 +1,6 @@
 package com.thoughtworks.capability.gtb.entrancequiz.service;
 
+import com.thoughtworks.capability.gtb.entrancequiz.Convert;
 import com.thoughtworks.capability.gtb.entrancequiz.domain.Education;
 import com.thoughtworks.capability.gtb.entrancequiz.domain.User;
 import com.thoughtworks.capability.gtb.entrancequiz.entity.EducationEntity;
@@ -27,23 +28,12 @@ public class EducationService {
         this.userRepository = userRepository;
     }
 
-    public static Education convertEducationEntityToEducation(EducationEntity educationEntity) {
-        return Education.builder().title(educationEntity.getTitle())
-                .year(educationEntity.getYear()).userId(educationEntity.getUserId())
-                .description(educationEntity.getDescription()).build();
-    }
-
-    public static EducationEntity convertEducationToEducationEntity(Education education) {
-        return EducationEntity.builder().title(education.getTitle())
-                .year(education.getYear()).userId(education.getUserId())
-                .description(education.getDescription()).build();
-    }
 
     public List<Education> getEducationByUserId(Long userId) {
         if (userRepository.existsById(userId)) {
             List<EducationEntity> educations = educationRepository.findAllByUserId(userId);
             return educations.stream()
-                    .map(education -> convertEducationEntityToEducation(education))
+                    .map(education -> Convert.convert(education,Education.class))
                     .collect(Collectors.toList());
         }
         throw new UserNotExistException(ExceptionEnum.USER_NOT_EXIST);
@@ -52,9 +42,10 @@ public class EducationService {
     public Education createEducation(Education education, Long id) {
         Optional<UserEntity> user = userRepository.findById(id);
         if (user.isPresent()) {
-            EducationEntity educationEntity = convertEducationToEducationEntity(education);
+            EducationEntity educationEntity = Convert.convert(education,EducationEntity.class);
+            educationEntity.setUserId(id);
             EducationEntity savedEducation = educationRepository.save(educationEntity);
-            return convertEducationEntityToEducation(savedEducation);
+            return Convert.convert(savedEducation,Education.class);
         }
         throw new UserNotExistException(ExceptionEnum.USER_NOT_EXIST);
     }

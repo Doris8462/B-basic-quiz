@@ -1,6 +1,7 @@
 package com.thoughtworks.capability.gtb.entrancequiz.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.thoughtworks.capability.gtb.entrancequiz.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,6 +23,11 @@ public class EducationEntity {
     private String title;
     private String description;
 
-    @ManyToOne
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+
+    private UserEntity user;
+    @Column(name = "user_id")
     private Long userId;
 }

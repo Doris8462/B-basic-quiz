@@ -22,6 +22,6 @@ public class UserEntity {
     private Long age;
     private String avatar;
     private String description;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<EducationEntity> educations;
 }
