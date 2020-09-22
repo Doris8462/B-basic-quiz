@@ -1,4 +1,4 @@
-package com.thoughtworks.capability.gtb.entrancequiz;
+package com.thoughtworks.capability.gtb.entrancequiz.service;
 
 import com.github.dozermapper.core.DozerBeanMapperBuilder;
 import com.github.dozermapper.core.Mapper;

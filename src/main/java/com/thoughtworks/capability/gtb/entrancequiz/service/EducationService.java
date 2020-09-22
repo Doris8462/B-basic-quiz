@@ -1,8 +1,6 @@
 package com.thoughtworks.capability.gtb.entrancequiz.service;
 
-import com.thoughtworks.capability.gtb.entrancequiz.Convert;
 import com.thoughtworks.capability.gtb.entrancequiz.domain.Education;
-import com.thoughtworks.capability.gtb.entrancequiz.domain.User;
 import com.thoughtworks.capability.gtb.entrancequiz.entity.EducationEntity;
 import com.thoughtworks.capability.gtb.entrancequiz.entity.UserEntity;
 import com.thoughtworks.capability.gtb.entrancequiz.exception.ExceptionEnum;
