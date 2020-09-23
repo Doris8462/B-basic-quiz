@@ -1,6 +1,8 @@
 package com.thoughtworks.capability.gtb.entrancequiz.controller;
 
 import com.thoughtworks.capability.gtb.entrancequiz.domain.Education;
+import com.thoughtworks.capability.gtb.entrancequiz.exception.ExceptionEnum;
+import com.thoughtworks.capability.gtb.entrancequiz.exception.UserNotExistException;
 import com.thoughtworks.capability.gtb.entrancequiz.service.EducationService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,18 +55,50 @@ public class EducationControllerTest {
 
     @Nested
     class GetEducationByUserId {
-        @Test
-        public void should_return_education_by_userId_with_jsonPath() throws Exception {
-            List<Education> educations = new ArrayList<>();
-            educations.add(firstEducation);
-            when(educationService.getEducationByUserId(1L)).thenReturn(educations);
+        @Nested
+        class WhenUserIdExists {
+            @Test
+            public void should_return_education_by_userId_with_jsonPath() throws Exception {
+                List<Education> educations = new ArrayList<>();
+                educations.add(firstEducation);
+                when(educationService.getEducationByUserId(1L)).thenReturn(educations);
 
-            mockMvc.perform(get("/users/{id}/educations", 1L))
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$[0].year", is(1995)));
+                mockMvc.perform(get("/users/{id}/educations", 1L))
+                        .andExpect(status().isOk())
+                        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(jsonPath("$[0].year", is(1995)));
 
-            verify(educationService).getEducationByUserId(1L);
+                verify(educationService).getEducationByUserId(1L);
+            }
+        }
+
+        @Nested
+        class WhenUserIdNotExisted {
+
+
+            @Test
+            public void should_throw_exception_when_user_id_is_not_valid() throws Exception {
+                List<Education> educations = new ArrayList<>();
+                educations.add(firstEducation);
+                when(educationService.getEducationByUserId(1L)).thenReturn(educations);
+                mockMvc.perform(get("/users/{id}/educations", "invalidId"))
+                        .andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.status", is(400)))
+                        .andExpect(jsonPath("$.error", is("CLIENT ERROR")))
+                        .andExpect(jsonPath("$.message", is("id类型不匹配")));
+                verify(educationService, times(0)).getEducationByUserId(1L);
+            }
+
+            @Test
+            public void should_return_NOT_FOUND() throws Exception {
+                when(educationService.getEducationByUserId(123L)).thenThrow(new UserNotExistException(ExceptionEnum.USER_NOT_EXIST));
+
+                mockMvc.perform(get("/users/{id}/educations", 123L))
+                        .andExpect(status().isNotFound())
+                        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+
+                verify(educationService).getEducationByUserId(123L);
+            }
         }
     }
 }
