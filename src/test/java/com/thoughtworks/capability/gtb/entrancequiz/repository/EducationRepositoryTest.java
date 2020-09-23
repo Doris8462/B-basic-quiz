@@ -44,4 +44,23 @@ public class EducationRepositoryTest {
         assertThat(educations.get(0).getDescription()).isEqualTo("11111");
         assertThat(educations.get(0).getYear()).isEqualTo(1995L);
     }
+
+    @Test
+    public void should_return_education_when_create() {
+        UserEntity userEntity = UserEntity.builder()
+                .name("Panda")
+                .age(24L)
+                .avatar("http://...")
+                .description("A good guy.")
+                .build();
+        entityManager.persistAndFlush(userEntity);
+        EducationEntity education = EducationEntity.builder()
+                .title("aaa").description("11111")
+                .year(1995L).user(userEntity)
+                .userId(1L).build();
+        EducationEntity savedEducation = educationRepository.save(education);
+        assertThat(savedEducation.getTitle()).isEqualTo("aaa");
+        assertThat(savedEducation.getDescription()).isEqualTo("11111");
+        assertThat(savedEducation.getYear()).isEqualTo(1995L);
+    }
 }
