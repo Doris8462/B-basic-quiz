@@ -1,6 +1,8 @@
 package com.thoughtworks.capability.gtb.entrancequiz.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.capability.gtb.entrancequiz.domain.Education;
+import com.thoughtworks.capability.gtb.entrancequiz.domain.User;
 import com.thoughtworks.capability.gtb.entrancequiz.exception.ExceptionEnum;
 import com.thoughtworks.capability.gtb.entrancequiz.exception.UserNotExistException;
 import com.thoughtworks.capability.gtb.entrancequiz.service.EducationService;
@@ -14,15 +16,20 @@ import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -36,6 +43,7 @@ public class EducationControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private JacksonTester<Education> educationJson;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     private Education firstEducation;
 
@@ -75,7 +83,6 @@ public class EducationControllerTest {
         @Nested
         class WhenUserIdNotExisted {
 
-
             @Test
             public void should_throw_exception_when_user_id_is_not_valid() throws Exception {
                 List<Education> educations = new ArrayList<>();
@@ -98,6 +105,28 @@ public class EducationControllerTest {
                         .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
                 verify(educationService).getEducationByUserId(123L);
+            }
+        }
+    }
+
+    @Nested
+    class CreateEducation {
+
+        @Nested
+        class WhenRequestIsValid {
+
+            @Test
+            public void should_return_education_when_create_education() throws Exception {
+                when(educationService.createEducation( firstEducation,1L))
+                        .thenReturn(firstEducation);
+                mockMvc.perform(post("/users/{id}/educations", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(firstEducation)))
+                        .andExpect(status().isCreated())
+                        .andExpect(jsonPath("$.year", is(1995)))
+                        .andExpect(jsonPath("$.title", is("aaa")))
+                        .andExpect(jsonPath("$.description", is("A good guy.")));
+                verify(educationService).createEducation(firstEducation,1L);
             }
         }
     }
